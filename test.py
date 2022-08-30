@@ -30,14 +30,14 @@ args = get_args()
 
 # setting
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-init_wandb(name=f'GIN-{args.dataset}', batch_size=args.batch_size, lr=args.lr,
+init_wandb(name=f'GIN-{args.dataset_aug}', batch_size=args.batch_size, lr=args.lr,
            epochs=args.epochs, hidden_channels=args.hidden_channels,
            num_layers=args.num_layers, device=device)
 
 # load dataset
 path = osp.join(osp.dirname(osp.realpath(__file__)), 'data', 'TU')
 print(path)
-dataset = TUDataset(path, name=args.dataset).shuffle()
+dataset = TUDataset(path, name=args.dataset_aug).shuffle()
 
 
 train_splits, val_splits, test_splits = data_split(X=np.arange(len(dataset)),
@@ -82,7 +82,7 @@ def test(loader):
         data = data.to(device)
         pred = model(data.x, data.edge_index, data.batch).argmax(dim=-1)
         total_correct += int((pred == data.y).sum())
-    return total_correct / len(loader.dataset)
+    return total_correct / len(loader.dataset_aug)
 
 
 for epoch in range(1, args.epochs + 1):
